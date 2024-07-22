@@ -1,5 +1,6 @@
 import fitz  # PyMuPDF 모듈, PDF 파일 작업을 위한 라이브러리
 import re
+import os
 
 # 상수 정의
 REMOVE_PATTERN = r'\s*\d+(,\s*\d+)*$'               # 줄의 마지막 숫자 제거
@@ -8,7 +9,6 @@ SUB_SPLIT_PATTERN = r'[,;:]\s*|\s*과\s*|\s*와\s*'
 IGNORE_TERMS = ["찾아보기", "기호", "색인", "| 찾아보기 |", "<기호>"]           # 무시할 용어
 MIN_TERM_LENGTH = 1
 ANGLE_BRACKET_PATTERN = r'<.>'  # 꺾쇠 괄호와 그 안의 한 문자 제거
-FILENAME = '/Users/jiyoon/Downloads/기술면접 지식그래프/IT도서 찾아보기/web programming/JSP 웹 프로그래밍.pdf'
 
 def extract_text_from_pdf(filename):
     """PDF 파일에서 텍스트를 추출합니다."""
@@ -66,11 +66,33 @@ def convert_index_to_text(terms):
     text = ', '.join(terms)
     return text
 
-# PDF에서 인덱스 추출
-index_terms = extract_index_from_pdf(FILENAME)
+def save_to_python_file(directory_name, index_text):
+    """인덱스 텍스트를 디렉토리명으로 된 파이썬 파일로 저장합니다."""
+    save_directory = '/Users/jiyoon/Downloads/기술면접 지식그래프/KG_Construction/codes/index'
+    os.makedirs(save_directory, exist_ok=True)
+    filename = os.path.join(save_directory, f'{directory_name}.py')
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(f"# {directory_name} 인덱스 용어\n")
+        f.write(f"index_terms = '''{index_text}'''\n")
 
-# 인덱스 텍스트로 변환
-index_text = convert_index_to_text(index_terms)
+# 상위 디렉토리 설정
+parent_directory = '/Users/jiyoon/Downloads/기술면접 지식그래프/IT도서 찾아보기'
 
-# 결과 출력
-print(index_text)
+# 상위 디렉토리 내의 모든 디렉토리 순회
+for directory_name in os.listdir(parent_directory):
+    directory_path = os.path.join(parent_directory, directory_name)
+    if os.path.isdir(directory_path):  # 디렉토리인지 확인
+        all_terms = []
+        # 디렉토리 내의 모든 PDF 파일 순회
+        for filename in os.listdir(directory_path):
+            if filename.endswith('.pdf'):
+                filepath = os.path.join(directory_path, filename)
+                # PDF에서 인덱스 추출
+                index_terms = extract_index_from_pdf(filepath)
+                all_terms.extend(index_terms)
+        
+        # 인덱스 텍스트로 변환
+        index_text = convert_index_to_text(all_terms)
+
+        # 파이썬 파일로 저장
+        save_to_python_file(directory_name, index_text)
