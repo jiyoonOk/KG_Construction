@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import ast
 
 def safe_eval_questions(question):
-    """ 문자열 형태의 리스트를 파싱하고, 공백으로 구분된 문자열로 벼놘"""
+    """ 문자열 형태의 리스트를 파싱하고, 공백으로 구분된 문자열로 변환"""
     if isinstance(question, str):
         try:
             question_list = ast.literal_eval(question)

@@ -4,8 +4,6 @@ import csv
 from tqdm import tqdm
 import re
 
-
-
 def extract_relevant_sections(filename): ## pdf 1개는 여러 페이지로 구성됨
     sections = []
     current_section = []
@@ -141,7 +139,3 @@ for dir in tqdm(directories):
         section_dicts = [parse_section_to_dict(section, com_name) for section in sections]
 
         save_dicts_to_csv(section_dicts, "./interview_QA")
-
-
-        
-        
