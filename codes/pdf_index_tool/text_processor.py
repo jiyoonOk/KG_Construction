@@ -35,5 +35,5 @@ def split_line_into_terms(line):
         part = part.strip()                                     # 문자열 앞뒤 공백 제거
         if len(part) > MIN_TERM_LENGTH:
             sub_parts = re.split(SUB_SPLIT_PATTERN, part)       
-            terms.extend([sub.strip() for sub in sub_parts if len(sub.strip()) > MIN_TERM_LENGTH])  
+            terms.extend([sub.strip() for sub in sub_parts if len(sub.strip()) > MIN_TERM_LENGTH and not sub.isdigit()])
     return terms

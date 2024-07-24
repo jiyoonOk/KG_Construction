@@ -12,9 +12,9 @@ def process_directory(parent_directory):
             for filename in os.listdir(directory_path):
                 if filename.endswith('.pdf'):
                     filepath = os.path.join(directory_path, filename)
-                    content_list = extract_text_from_pdf(filepath)
-                    index_terms_dict = extract_index_terms(content_list, directory_name)
-                    all_terms_dict.update(index_terms_dict)
+                    content_list = extract_text_from_pdf(filepath)                          # PDF 파일 내용 추출
+                    index_terms_dict = extract_index_terms(content_list, directory_name)    # 인덱스 추출
+                    all_terms_dict.update(index_terms_dict)                                 # 인덱스 저장
             save_to_json_file(directory_name, all_terms_dict)
 
 if __name__ == "__main__":

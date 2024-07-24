@@ -2,11 +2,6 @@ import os
 import json
 import pandas as pd
 
-# 질문들 엑셀 파일에서 들고와서 검색하기. O
-# TODO: 고도화1: 문제, 프로젝트, 서비스 등 보편적인 단어라서 많이 겹치는 키워드 처리 어떻게?
-# TODO: 고도화2: 질문들 문장 단위로 나누어서 검색할 수 있게 하기
-# 트라이 구조를 활용하여 검색 기능 구현한 것 설명할 수 있게 학습하기. O
-
 """트라이 구조의 장점 : 빠른 검색 속도, 메모리 효율적 사용(중복 단어 처리, 접두사 공유), 문자열 검색에 특화, 자동 완성 및 사전 기능"""
 
 class TrieNode:
@@ -42,6 +37,30 @@ class Trie:
             node = node.children[char]                  
         return node.is_end_of_word, node.subjects
     
+    def starts_with(self, prefix):
+        """특정 접두사로 시작하는 단어가 트라이에 있는지 확인하고, 해당 노드를 반환"""
+        node = self.root
+        for char in prefix:
+            if char not in node.children:
+                return None
+            node = node.children[char]
+        return node
+
+    def collect_all_words(self, node=None, prefix='', words=None):
+        """특정 노드 이하의 모든 단어를 수집"""
+        if words is None:
+            words = []
+        if node is None:
+            node = self.root
+        
+        if node.is_end_of_word:
+            words.append((prefix, node.subjects))
+        
+        for char, child_node in node.children.items():
+            self.collect_all_words(child_node, prefix + char, words)
+        
+        return words
+    
     """트라이를 재귀적으로 사전으로 변환"""
     def to_dict(self):
         def node_to_dict(node):
@@ -71,17 +90,26 @@ def search_questions_in_trie(trie, questions):
     results = []
     for question in questions:
         result = {"question": question, "subjects": {}}
-        words = question.split()                                        
-        for word in words:
-            found, subjects = trie.search(word)                         
-            if found:                                                   
-                for subject in subjects:                                
-                    if subject not in result["subjects"]:               
+        length = len(question)
+        for i in range(length):
+            node = trie.root
+            last_found_word = None
+            last_subjects = []
+            for j in range(i, length):
+                if question[j] not in node.children:
+                    break
+                node = node.children[question[j]]
+                if node.is_end_of_word:
+                    last_found_word = question[i:j+1]
+                    last_subjects = node.subjects
+            if last_found_word:
+                for subject in last_subjects:
+                    if subject not in result["subjects"]:
                         result["subjects"][subject] = []
-                    if word not in result["subjects"][subject]:
-                        result["subjects"][subject].append(word)            
+                    if last_found_word not in result["subjects"][subject]:
+                        result["subjects"][subject].append(last_found_word)
         results.append(result)
-    return results                                                      # list: 각 질문에 대해 발견된 키워드와 연관된 과목 리스트를 포함한 결과
+    return results                # list: 각 질문에 대해 발견된 키워드와 연관된 과목 리스트를 포함한 결과
 
 def save_results_to_csv(results, output_path):
     """검색 결과를 CSV 파일로 저장"""
