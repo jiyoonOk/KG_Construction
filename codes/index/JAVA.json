@@ -966,7 +966,6 @@
     "프로세스": "JAVA",
     "플랫폼 독립": "JAVA",
     "플랫폼 종속": "JAVA",
-    "행동": "JAVA",
     "확장": "JAVA",
     "accept": "JAVA",
     "addKeyListener": "JAVA",
