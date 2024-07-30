@@ -17,7 +17,7 @@ def load_subjects_from_json(json_path):
 
 def normalize_subject(subject):
     """과목 이름을 정규화하여 파일 이름으로 사용할 수 있도록 변환"""
-    return unicodedata.normalize('NFKC', subject).replace('/', '_').replace('\\', '_').replace(' ', '_')
+    return unicodedata.normalize('NFKC', subject).replace('/', '_').replace('\\', '_')
 
 def split_subjects_to_csv(results_df, subjects, output_directory):
     """subject별로 질문을 나눠 각각의 CSV 파일로 저장"""
@@ -47,7 +47,7 @@ def split_subjects_to_csv(results_df, subjects, output_directory):
         
         # CSV 파일로 저장
         subject_df.to_csv(subject_csv_path, index=False, encoding='utf-8-sig')
-        print(f"Saved {subject_csv_path}")
+        print(f"Saved {subject_csv_path} -> {len(subject_questions)}개")
 
 def main():
     csv_path = '/Users/jiyoon/Downloads/기술면접 지식그래프/KG_Construction/codes/results/기술면접_검색결과_키워드있음.csv'
